@@ -2,9 +2,9 @@
   <q-list>
     <q-item v-for="todo in todos" :key="todo.id">
       <q-item-section side>
-        <q-checkbox :model-value="true" />
+        <q-checkbox v-model="todo.isFinished" />
       </q-item-section>
-      <q-item-section> {{ todo.id }} {{ todo.content }} </q-item-section>
+      <q-item-section> {{ todo.content }} </q-item-section>
       <q-item-section side>
         <q-btn
           flat
