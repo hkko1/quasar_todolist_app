@@ -14,7 +14,6 @@
           </template>
         </q-input>
       </q-toolbar>
-      <!-- <todo-list bordered :todos="todos" /> -->
       <todo-list bordered />
       <!-- <example-component
         title="Example component -hkko"
@@ -33,7 +32,7 @@
           icon="mdi-plus"
           @click="showDialog = true"
         />
-        <q-dialog v-model="showDialog" persistent>
+        <q-dialog v-model="showDialog" persistent @before-show="initDialog">
           <div>
             <q-form @submit="addTodoList" @reset="cancelTodoList">
               <q-card style="min-width: 350px">
@@ -58,10 +57,7 @@
 
 <script lang="ts">
 import { Todo, Meta } from 'components/models';
-// import ExampleComponent from 'components/ExampleComponent.vue';
-import { defineComponent, ref, reactive } from 'vue';
-// import CreateTodoButton from 'components/CreateTodoButton.vue';
-// import InputDialog from 'components/InputDialog.vue';
+import { defineComponent, ref } from 'vue';
 import TodoList from 'components/TodoList.vue';
 import { useTodoListsStore } from 'src/stores/todos-store';
 
@@ -75,6 +71,11 @@ export default defineComponent({
     const showDialog = ref(false);
     const todo = ref('');
     const store = useTodoListsStore();
+
+    function initDialog() {
+      console.log('indexPage: initialize Dialog----');
+      todo.value = '';
+    }
 
     function addTodoList() {
       console.log(todo.value);
@@ -93,7 +94,15 @@ export default defineComponent({
       showDialog.value = false;
     }
 
-    return { showDialog, search, addTodoList, cancelTodoList, prompt, todo };
+    return {
+      showDialog,
+      search,
+      initDialog,
+      addTodoList,
+      cancelTodoList,
+      prompt,
+      todo,
+    };
   },
 });
 </script>

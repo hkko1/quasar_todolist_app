@@ -19,6 +19,11 @@ export const useTodoListsStore = defineStore('todoLists', () => {
     return todos.value.filter((item) => !item.isFinished);
   }
 
+  function toggleIsFinished(id: number) {
+    const index = todos.value.findIndex((item) => item.id === id);
+    todos.value[index].isFinished = !todos.value[index].isFinished;
+  }
+
   function addTodoList(todo: Todo) {
     nextId.value++;
     todos.value.push(todo);
@@ -39,6 +44,7 @@ export const useTodoListsStore = defineStore('todoLists', () => {
     listCount,
     finishedTodos,
     unfinishedTodos,
+    toggleIsFinished,
     addTodoList,
     removeTodoList,
   };
