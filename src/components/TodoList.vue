@@ -1,0 +1,49 @@
+<template>
+  <q-list>
+    <q-item v-for="todo in todos" :key="todo.id">
+      <q-item-section side>
+        <q-checkbox :model-value="true" />
+      </q-item-section>
+      <q-item-section> {{ todo.id }} {{ todo.content }} </q-item-section>
+      <q-item-section side>
+        <q-btn
+          flat
+          round
+          size="sm"
+          icon="mdi-delete"
+          @click="removeTodoList(todo.id)"
+        />
+      </q-item-section>
+    </q-item>
+  </q-list>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, toRef, reactive } from 'vue';
+import { Todo } from './models';
+import { useTodoListsStore } from 'src/stores/todos-store';
+// function useDisplayTodo(todos: Ref<Todo[]>) {
+
+// }
+
+export default defineComponent({
+  name: 'TodoList',
+  // props: {
+  //   todos: {
+  //     type: Array as PropType<Todo[]>,
+  //     default: () => [],
+  //   },
+  // },
+  setup() {
+    const store = useTodoListsStore();
+    const todos = store.todos;
+
+    function removeTodoList(id: number) {
+      console.log('remove id:', id);
+      store.removeTodoList(id);
+    }
+
+    return { todos, removeTodoList };
+  },
+});
+</script>
