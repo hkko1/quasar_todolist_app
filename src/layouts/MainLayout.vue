@@ -20,9 +20,9 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
         <q-item class="bg-grey-3">
-          <q-item-section> Lists </q-item-section>
+          <q-item-section> Todo Lists </q-item-section>
           <q-item-section side>
-            <create-todo-list-button icon="mdi-plus" flat round />
+            <create-todo-list-button />
           </q-item-section>
         </q-item>
         <todo-lists-list />

@@ -18,14 +18,14 @@
             <q-form @submit="addTodoList" @reset="cancelTodoList">
               <q-card style="min-width: 350px">
                 <q-card-section>
-                  <div class="text-h6">Add new ToDo list</div>
+                  <div class="text-h6">Add new ToDo</div>
                 </q-card-section>
                 <q-card-section class="q-pt-none">
                   <q-input dense v-model="todo" autofocus />
                 </q-card-section>
                 <q-card-actions align="right" class="text-primary">
                   <q-btn flat label="Cancel" type="reset" />
-                  <q-btn flat label="Add" type="submit" />
+                  <q-btn flat label="Add Todo" type="submit" />
                 </q-card-actions>
               </q-card>
             </q-form>
@@ -33,35 +33,6 @@
         </q-dialog>
       </q-page-sticky>
     </div>
-    <!-- </q-card> -->
-    <!-- <div class="col-xs-3">
-      <q-btn
-        fab
-        style="margin-bottom: -42px"
-        class="q-ml-lg"
-        color="secondary"
-        icon="mdi-plus"
-        @click="showDialog = true"
-      />
-      <q-dialog v-model="showDialog" persistent @before-show="initDialog">
-        <div>
-          <q-form @submit="addTodoList" @reset="cancelTodoList">
-            <q-card style="min-width: 350px">
-              <q-card-section>
-                <div class="text-h6">Add new ToDo list</div>
-              </q-card-section>
-              <q-card-section class="q-pt-none">
-                <q-input dense v-model="todo" autofocus />
-              </q-card-section>
-              <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" type="reset" />
-                <q-btn flat label="Add" type="submit" />
-              </q-card-actions>
-            </q-card>
-          </q-form>
-        </div>
-      </q-dialog>
-    </div> -->
   </q-page>
 </template>
 

@@ -1,10 +1,68 @@
 <template>
-  <q-btn />
+  <q-btn icon="mdi-plus" flat round @click="showDialog = true" />
+  <q-dialog v-model="showDialog" persistent @before-show="initDialog">
+    <div>
+      <q-form @submit="addTodoListsList" @reset="cancelTodoListsList">
+        <q-card style="min-width: 350px">
+          <q-card-section>
+            <div class="text-h6">Add New ToDo list</div>
+          </q-card-section>
+          <q-card-section class="q-pt-none">
+            <q-input dense v-model="todoListsTitle" autofocus />
+          </q-card-section>
+          <q-card-actions align="right" class="text-primary">
+            <q-btn flat label="Cancel" type="reset" />
+            <q-btn flat label="Add New list" type="submit" />
+          </q-card-actions>
+        </q-card>
+      </q-form>
+    </div>
+  </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { ITodoLists, ITodo } from './models';
+import { useTodoListsListStore } from 'src/stores/todolistslist-store';
+
 export default defineComponent({
-  // name: 'ComponentName'
+  name: 'CreateTodoList',
+  setup() {
+    const showDialog = ref(false);
+    const todoListsTitle = ref('');
+    const store = useTodoListsListStore();
+
+    function initDialog() {
+      console.log('initDialog_list');
+      todoListsTitle.value = '';
+    }
+
+    function addTodoListsList() {
+      console.log('addTodoListsList title:', todoListsTitle.value);
+      const todoListsList: ITodoLists = {
+        id: store.nextListId,
+        title: todoListsTitle.value,
+        todos: <ITodo[]>[],
+      };
+
+      store.addTodoListsList(todoListsList);
+      console.log('todolistslist-length:', store.listCount());
+      showDialog.value = false;
+    }
+
+    function cancelTodoListsList() {
+      console.log('cancelTodoListsList');
+      showDialog.value = false;
+    }
+
+    return {
+      store,
+      showDialog,
+      todoListsTitle,
+      initDialog,
+      addTodoListsList,
+      cancelTodoListsList,
+    };
+  },
 });
 </script>

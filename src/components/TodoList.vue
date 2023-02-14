@@ -1,5 +1,6 @@
 <template>
   <q-list>
+    <q-list-title class="text-h6"> Title </q-list-title>
     <q-item v-for="todo in todos" :key="todo.id">
       <q-item-section side>
         <q-checkbox v-model="todo.isFinished" />

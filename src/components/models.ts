@@ -7,3 +7,15 @@ export interface Todo {
 export interface Meta {
   totalCount: number;
 }
+
+export interface ITodo {
+  id: number;
+  content: string;
+  isFinished: boolean;
+}
+
+export interface ITodoLists {
+  id: number;
+  title: string;
+  todos: ITodo[];
+}
