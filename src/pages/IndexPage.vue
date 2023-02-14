@@ -1,32 +1,13 @@
 <template>
   <q-page class="row page-bg">
-    <q-card class="col-xs-9">
-      <q-toolbar>
-        <q-input
-          dense
-          placeholder="Search"
-          borderless
-          class="full-width"
-          :model-value="search"
-        >
-          <template #append>
-            <q-icon name="mdi-magnify" />
-          </template>
-        </q-input>
-      </q-toolbar>
-      <todo-list bordered />
-      <!-- <example-component
-        title="Example component -hkko"
-        active
-        :todos="todos"
-        :meta="meta"
-      ></example-component> -->
-    </q-card>
-    <div class="col-xs-3">
-      <q-toolbar class="bg-primary">
+    <!-- <q-card class="col-xs-9"> -->
+
+    <div class="col-xs-12">
+      <todo-list />
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
           fab
-          style="margin-bottom: -42px"
+          style="margin-bottom: 100 px"
           class="q-ml-lg"
           color="secondary"
           icon="mdi-plus"
@@ -50,8 +31,37 @@
             </q-form>
           </div>
         </q-dialog>
-      </q-toolbar>
+      </q-page-sticky>
     </div>
+    <!-- </q-card> -->
+    <!-- <div class="col-xs-3">
+      <q-btn
+        fab
+        style="margin-bottom: -42px"
+        class="q-ml-lg"
+        color="secondary"
+        icon="mdi-plus"
+        @click="showDialog = true"
+      />
+      <q-dialog v-model="showDialog" persistent @before-show="initDialog">
+        <div>
+          <q-form @submit="addTodoList" @reset="cancelTodoList">
+            <q-card style="min-width: 350px">
+              <q-card-section>
+                <div class="text-h6">Add new ToDo list</div>
+              </q-card-section>
+              <q-card-section class="q-pt-none">
+                <q-input dense v-model="todo" autofocus />
+              </q-card-section>
+              <q-card-actions align="right" class="text-primary">
+                <q-btn flat label="Cancel" type="reset" />
+                <q-btn flat label="Add" type="submit" />
+              </q-card-actions>
+            </q-card>
+          </q-form>
+        </div>
+      </q-dialog>
+    </div> -->
   </q-page>
 </template>
 

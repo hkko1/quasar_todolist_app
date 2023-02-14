@@ -19,7 +19,6 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-toolbar class="bg-primary" />
         <q-item class="bg-grey-3">
           <q-item-section> Lists </q-item-section>
           <q-item-section side>
