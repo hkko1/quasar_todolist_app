@@ -18,4 +18,5 @@ export interface ITodoLists {
   id: number;
   title: string;
   todos: ITodo[];
+  nextTodoId: number;
 }

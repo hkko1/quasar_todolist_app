@@ -1,7 +1,9 @@
 <template>
-  <q-list>
-    <q-list-title class="text-h6"> Title </q-list-title>
-    <q-item v-for="todo in todos" :key="todo.id">
+  <div class="text-h6" v-if="!todosList">Make your Todo List</div>
+  <q-list v-else>
+    <div class="text-h6">{{ todosList.title }}</div>
+
+    <q-item v-for="todo in todosList.todos" :key="todo.id">
       <q-item-section side>
         <q-checkbox v-model="todo.isFinished" />
       </q-item-section>
@@ -20,13 +22,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, toRef, reactive } from 'vue';
-import { Todo } from './models';
-import { useTodoListsStore } from 'src/stores/todos-store';
+import { defineComponent, computed, ref, toRef, reactive } from 'vue';
+import { useTodoListsListStore } from 'src/stores/todolistslist-store';
 // function useDisplayTodo(todos: Ref<Todo[]>) {
 
 // }
-
 export default defineComponent({
   name: 'TodoList',
   // props: {
@@ -36,15 +36,18 @@ export default defineComponent({
   //   },
   // },
   setup() {
-    const store = useTodoListsStore();
-    const todos = store.todos;
+    // const store = useTodoListsStore();
+    // const todos = store.todos;
+    const store = useTodoListsListStore();
+    const currentListId = computed(() => store.currentListId);
+    const todosList = computed(() => store.currentTodoLists);
 
     function removeTodoList(id: number) {
       console.log('remove id:', id);
-      store.removeTodoList(id);
+      store.removeTodoFromTodoList(store.currentListId, id);
     }
-
-    return { todos, removeTodoList };
+    console.log('todos: ', todosList);
+    return { store, todosList, currentListId, removeTodoList };
   },
 });
 </script>

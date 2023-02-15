@@ -2,17 +2,17 @@
   <q-btn icon="mdi-plus" flat round @click="showDialog = true" />
   <q-dialog v-model="showDialog" persistent @before-show="initDialog">
     <div>
-      <q-form @submit="addTodoListsList" @reset="cancelTodoListsList">
+      <q-form @submit="createTodoListsList" @reset="cancelTodoListsList">
         <q-card style="min-width: 350px">
           <q-card-section>
-            <div class="text-h6">Add New ToDo list</div>
+            <div class="text-h6">Create New ToDo list</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
             <q-input dense v-model="todoListsTitle" autofocus />
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
             <q-btn flat label="Cancel" type="reset" />
-            <q-btn flat label="Add New list" type="submit" />
+            <q-btn flat label="Create New list" type="submit" />
           </q-card-actions>
         </q-card>
       </q-form>
@@ -37,16 +37,17 @@ export default defineComponent({
       todoListsTitle.value = '';
     }
 
-    function addTodoListsList() {
+    function createTodoListsList() {
       console.log('addTodoListsList title:', todoListsTitle.value);
       const todoListsList: ITodoLists = {
         id: store.nextListId,
         title: todoListsTitle.value,
         todos: <ITodo[]>[],
+        nextTodoId: 0,
       };
 
-      store.addTodoListsList(todoListsList);
-      console.log('todolistslist-length:', store.listCount());
+      store.createTodoListsList(todoListsList);
+      console.log('todolistslist-length:', store.listCount);
       showDialog.value = false;
     }
 
@@ -60,7 +61,7 @@ export default defineComponent({
       showDialog,
       todoListsTitle,
       initDialog,
-      addTodoListsList,
+      createTodoListsList,
       cancelTodoListsList,
     };
   },

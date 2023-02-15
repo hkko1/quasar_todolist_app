@@ -1,6 +1,11 @@
 <template>
   <q-list>
-    <q-item clickable v-for="todoLists in todoListsList" :key="todoLists.id">
+    <q-item
+      clickable
+      v-for="todoLists in todoListsList"
+      :key="todoLists.id"
+      @click="selectTodoLists(todoLists.id)"
+    >
       <q-item-section side>
         <q-icon color="red-15" name="mdi-emoticon-cool-outline" />
       </q-item-section>
@@ -13,7 +18,7 @@
           round
           size="sm"
           icon="mdi-delete"
-          @click="removeTitleTodoList(todoLists.id)"
+          @click="deleteTitleTodoList(todoLists.id)"
         />
       </q-item-section>
     </q-item>
@@ -22,8 +27,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { ITodoLists } from './models';
+//import { ITodoLists } from './models';
 import { useTodoListsListStore } from 'src/stores/todolistslist-store';
+import { useRoute, useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'TodoListsList',
@@ -31,13 +37,22 @@ export default defineComponent({
   setup() {
     const store = useTodoListsListStore();
     const todoListsList = store.todoListsList;
+    // const route = useRoute();
+    // const router = useRouter();
 
-    function removeTitleTodoList(id: number) {
+    function deleteTitleTodoList(id: number) {
       console.log('removeTItleTodoList');
-      store.removeTodoListsList(id);
+      store.deleteTodoListsList(id);
     }
 
-    return { store, todoListsList, removeTitleTodoList };
+    function selectTodoLists(id: number) {
+      console.log('selectTodoLists: current id= ', id);
+      store.currentListId = id;
+      console.log('selectTodoLists: store id= ', store.currentListId);
+      //router.push({ path: `${route.path}/${id}` });
+    }
+
+    return { store, todoListsList, deleteTitleTodoList, selectTodoLists };
   },
 });
 </script>

@@ -2,10 +2,7 @@
   <q-page class="row page-bg">
     <!-- <q-card class="col-xs-9"> -->
 
-    <div class="text-h6" v-if="!store.currentTodoLists">
-      Make your Todo List!
-    </div>
-    <div class="col-xs-12" v-else>
+    <div class="col-xs-12">
       <todo-list />
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
         <q-btn
@@ -40,11 +37,10 @@
 </template>
 
 <script lang="ts">
-import { ITodo } from 'components/models';
+import { Todo, Meta } from 'components/models';
 import { defineComponent, ref } from 'vue';
 import TodoList from 'components/TodoList.vue';
-//import { useTodoListsStore } from 'src/stores/todos-store';
-import { useTodoListsListStore } from 'src/stores/todolistslist-store';
+import { useTodoListsStore } from 'src/stores/todos-store';
 
 export default defineComponent({
   name: 'IndexPage',
@@ -55,7 +51,7 @@ export default defineComponent({
     const search = ref('');
     const showDialog = ref(false);
     const todo = ref('');
-    const store = useTodoListsListStore();
+    const store = useTodoListsStore();
 
     function initDialog() {
       console.log('indexPage: initialize Dialog----');
@@ -65,14 +61,13 @@ export default defineComponent({
     function addTodoList() {
       console.log(todo.value);
 
-      //const currentTodoLists = store.currentTodoLists;
-      const item: ITodo = {
-        id: store.currentTodoLists ? store.currentTodoLists.nextTodoId : -1,
+      const item: Todo = {
+        id: store.nextId,
         content: todo.value,
         isFinished: false,
       };
 
-      store.addTodoIntoTodoList(store.currentListId, item);
+      store.addTodoList(item);
       showDialog.value = false;
     }
 
@@ -81,7 +76,6 @@ export default defineComponent({
     }
 
     return {
-      store,
       showDialog,
       search,
       initDialog,
