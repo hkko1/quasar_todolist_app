@@ -37,8 +37,8 @@ export default defineComponent({
   setup() {
     const store = useTodoListsListStore();
     const todoListsList = store.todoListsList;
-    // const route = useRoute();
-    // const router = useRouter();
+    //const route = useRoute();
+    const router = useRouter();
 
     function deleteTitleTodoList(id: number) {
       console.log('removeTItleTodoList');
@@ -49,7 +49,7 @@ export default defineComponent({
       console.log('selectTodoLists: current id= ', id);
       store.currentListId = id;
       console.log('selectTodoLists: store id= ', store.currentListId);
-      //router.push({ path: `${route.path}/${id}` });
+      router.push({ path: `list/${id}` });
     }
 
     return { store, todoListsList, deleteTitleTodoList, selectTodoLists };
