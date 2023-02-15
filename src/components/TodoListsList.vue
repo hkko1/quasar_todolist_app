@@ -29,7 +29,7 @@
 import { defineComponent } from 'vue';
 //import { ITodoLists } from './models';
 import { useTodoListsListStore } from 'src/stores/todolistslist-store';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'TodoListsList',
@@ -43,13 +43,16 @@ export default defineComponent({
     function deleteTitleTodoList(id: number) {
       console.log('removeTItleTodoList');
       store.deleteTodoListsList(id);
+      if (store.listCount == 0) {
+        router.push({ path: '/' });
+      }
     }
 
     function selectTodoLists(id: number) {
       console.log('selectTodoLists: current id= ', id);
       store.currentListId = id;
       console.log('selectTodoLists: store id= ', store.currentListId);
-      router.push({ path: `list/${id}` });
+      router.push({ path: `/list/${id}` });
     }
 
     return { store, todoListsList, deleteTitleTodoList, selectTodoLists };

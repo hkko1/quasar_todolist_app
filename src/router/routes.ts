@@ -10,8 +10,8 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'list/:id', component: () => import('pages/DynamicPage.vue') },
+      { path: '', component: () => import('src/pages/DefalutPage.vue') },
+      { path: 'list/:id', component: () => import('pages/IndexPage.vue') },
     ],
   },
   // Always leave this as last one,

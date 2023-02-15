@@ -45,6 +45,7 @@ import { defineComponent, ref } from 'vue';
 import TodoList from 'components/TodoList.vue';
 //import { useTodoListsStore } from 'src/stores/todos-store';
 import { useTodoListsListStore } from 'src/stores/todolistslist-store';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   name: 'IndexPage',
@@ -56,6 +57,7 @@ export default defineComponent({
     const showDialog = ref(false);
     const todo = ref('');
     const store = useTodoListsListStore();
+    const route = ref(useRoute());
 
     function initDialog() {
       console.log('indexPage: initialize Dialog----');
@@ -65,6 +67,8 @@ export default defineComponent({
     function addTodoList() {
       console.log(todo.value);
 
+      const todoListsId = parseInt(route.value.params.id as string);
+      //const todoListsId = parseInt(route.params.id as string);
       //const currentTodoLists = store.currentTodoLists;
       const item: ITodo = {
         id: store.currentTodoLists ? store.currentTodoLists.nextTodoId : -1,
@@ -72,7 +76,14 @@ export default defineComponent({
         isFinished: false,
       };
 
-      store.addTodoIntoTodoList(store.currentListId, item);
+      //store.addTodoIntoTodoList(store.currentListId, item);
+      console.log(
+        'addTodoList-todoListsId=',
+        todoListsId,
+        '_storeCurrentTodoId: ',
+        store.currentListId
+      );
+      store.addTodoIntoTodoList(todoListsId, item);
       showDialog.value = false;
     }
 
