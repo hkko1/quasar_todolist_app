@@ -2,9 +2,7 @@
   <q-page class="row page-bg">
     <!-- <q-card class="col-xs-9"> -->
 
-    <div class="text-h6" v-if="!store.currentTodoLists">
-      Make your Todo List!
-    </div>
+    <div class="text-h6" v-if="!currentTodoLists">Make your Todo List!</div>
     <div class="col-xs-12" v-else>
       <todo-list />
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -41,7 +39,7 @@
 
 <script lang="ts">
 import { ITodo } from 'components/models';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import TodoList from 'components/TodoList.vue';
 //import { useTodoListsStore } from 'src/stores/todos-store';
 import { useTodoListsListStore } from 'src/stores/todolistslist-store';
@@ -59,6 +57,14 @@ export default defineComponent({
     const store = useTodoListsListStore();
     const route = ref(useRoute());
 
+    const todoListsId = computed(() =>
+      parseInt(route.value.params.id as string)
+    );
+
+    const currentTodoLists = computed(() =>
+      store.todoListsList.find((list) => list.id === todoListsId.value)
+    );
+
     function initDialog() {
       console.log('indexPage: initialize Dialog----');
       todo.value = '';
@@ -67,11 +73,16 @@ export default defineComponent({
     function addTodoList() {
       console.log(todo.value);
 
-      const todoListsId = parseInt(route.value.params.id as string);
-      //const todoListsId = parseInt(route.params.id as string);
+      //const todoListsId = parseInt(route.value.params.id as string);
+
       //const currentTodoLists = store.currentTodoLists;
+
+      const id = currentTodoLists.value
+        ? currentTodoLists.value.nextTodoId
+        : -1;
       const item: ITodo = {
-        id: store.currentTodoLists ? store.currentTodoLists.nextTodoId : -1,
+        //id: store.currentTodoLists ? store.currentTodoLists.nextTodoId : -1,
+        id,
         content: todo.value,
         isFinished: false,
       };
@@ -79,11 +90,11 @@ export default defineComponent({
       //store.addTodoIntoTodoList(store.currentListId, item);
       console.log(
         'addTodoList-todoListsId=',
-        todoListsId,
-        '_storeCurrentTodoId: ',
-        store.currentListId
+        todoListsId
+        // '_storeCurrentTodoId: ',
+        // store.currentListId
       );
-      store.addTodoIntoTodoList(todoListsId, item);
+      store.addTodoIntoTodoList(todoListsId.value, item);
       showDialog.value = false;
     }
 
@@ -95,6 +106,7 @@ export default defineComponent({
       store,
       showDialog,
       search,
+      currentTodoLists,
       initDialog,
       addTodoList,
       cancelTodoList,
