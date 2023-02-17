@@ -7,9 +7,13 @@ import {
   doc,
   addDoc,
   deleteDoc,
+  updateDoc,
+  getDoc,
   getDocs,
   query,
   where,
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 
 //Data inside state() is reactive element.
@@ -43,24 +47,56 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
 
   async function loadTodoListsFromDb() {
     console.log('load data from db');
+    await new Promise((r) => setTimeout(r, 50));
 
     const querySnapshot = await getDocs(collection(db, 'todoListsList'));
+    // querySnapshot.forEach((doc) => {
+    //   console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+
+    // });
+
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
+      console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
+
+      //update the value of nextListid
+      if (nextListId.value <= doc.data().id) {
+        nextListId.value = doc.data().id + 1;
+      }
+
+      const todoLists: ITodoLists = {
+        id: doc.data().id,
+        title: doc.data().title,
+        todos: <ITodo[]>[],
+        nextTodoId: doc.data().nextTodoId,
+      };
+
+      doc
+        .data()
+        .todos.forEach(
+          (td: { id: number; content: string; isFinished: boolean }) => {
+            const todo: ITodo = {
+              id: td.id,
+              content: td.content,
+              isFinished: td.isFinished,
+            };
+            todoLists.todos.push(todo);
+          }
+        );
+      //debugger;
+      todoListsList.value.push(todoLists);
     });
+
+    // todoListsList.value.forEach((list) => {
+    //   console.log('todoList:', list);
+    // });
   }
+
+  loadTodoListsFromDb();
 
   async function createTodoListsList(todoLists: ITodoLists) {
     nextListId.value++;
     console.log('createTodoListsList', todoLists);
     todoListsList.value.push(todoLists);
-
-    // const todoLists: ITodoLists = {
-    //   id: store.nextListId,
-    //   title: todoListsTitle.value,
-    //   todos: todo,
-    //   nextTodoId: 0,
-    // };
 
     try {
       const docRef = await addDoc(collection(db, 'todoListsList'), todoLists);
@@ -89,25 +125,56 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      const docRef = doc(db, 'todolistsList', querySnapshot.docs[0].id);
+      const docRef = doc(db, 'todoListsList', querySnapshot.docs[0].id);
       console.log('id:', querySnapshot.docs[0].id);
       console.log('deleteTodoListsList_docRef:', docRef);
-      await deleteDoc(docRef);
+
+      await deleteDoc(docRef)
+        .then(() => {
+          console.log('Document has been deleted successfully.');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } else {
       console.log('deleteTodoListsList_ no db data');
     }
   }
 
-  function addTodoIntoTodoList(listId: number, todo: ITodo) {
+  async function addTodoIntoTodoList(listId: number, todo: ITodo) {
     const listIndex = todoListsList.value.findIndex(
       (list) => list.id === listId
     );
 
     todoListsList.value[listIndex].todos.push(todo);
     todoListsList.value[listIndex].nextTodoId++;
+
+    const todoListsListRef = collection(db, 'todoListsList');
+    const q = query(todoListsListRef, where('id', '==', listId));
+    console.log('deleteTodoListsList_q:', q);
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, 'todoListsList', querySnapshot.docs[0].id);
+      console.log('id:', querySnapshot.docs[0].id);
+      console.log('addTodoIntoTodoList_docRef:', docRef);
+
+      await updateDoc(docRef, {
+        todos: arrayUnion(todo),
+        nextTodoId: todoListsList.value[listIndex].nextTodoId,
+      })
+        .then(() => {
+          console.log('Document has been updated successfully.');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      console.log('addTodoIntoTodoList_ no db data');
+    }
   }
 
-  function removeTodoFromTodoList(listId: number, todoId: number) {
+  async function removeTodoFromTodoList(listId: number, todoId: number) {
     const listIndex = todoListsList.value.findIndex(
       (list) => list.id === listId
     );
@@ -117,6 +184,83 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
     );
 
     todoListsList.value[listIndex].todos.splice(todoIndex, 1);
+
+    const todoListsListRef = collection(db, 'todoListsList');
+    const q = query(todoListsListRef, where('id', '==', listId));
+    console.log('deleteTodoListsList_q:', q);
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, 'todoListsList', querySnapshot.docs[0].id);
+      console.log('id:', querySnapshot.docs[0].id);
+      console.log('addTodoIntoTodoList_docRef:', docRef);
+
+      //const todos = ref([]);
+      await getDoc(docRef).then((doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          //todos.value = data.todos.filter((todo: { id: number; }) => todo.id !== todoId);
+          updateDoc(docRef, {
+            todos: arrayRemove(
+              data.todos.find((todo: { id: number }) => todo.id === todoId)
+            ),
+          })
+            .then(() => {
+              console.log('(remove) Document has been updated successfully.');
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+      });
+    } else {
+      console.log('removeTodoFromTodoList_ no db data');
+    }
+  }
+
+  async function toggleCheckBox(
+    listId: number,
+    todoId: number,
+    isFinished: boolean
+  ) {
+    console.log(
+      `Store_toggleCheckBox: listId=${listId} todoId=${todoId} isFinished=${isFinished}`
+    );
+
+    todoListsList.value.forEach((todoLists) => {
+      if (todoLists.id == listId) {
+        todoLists.todos.forEach((todo) => {
+          if (todo.id == todoId) {
+            todo.isFinished = isFinished;
+          }
+        });
+      }
+    });
+
+    const todoListsListRef = collection(db, 'todoListsList');
+    const q = query(todoListsListRef, where('id', '==', listId));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, 'todoListsList', querySnapshot.docs[0].id);
+      console.log('id:', querySnapshot.docs[0].id);
+      console.log('toggleCheckBox_docRef:', docRef);
+
+      //const todos = ref([]);
+      await getDoc(docRef).then((doc) => {
+        if (doc.exists()) {
+          updateDoc(docRef, {
+            todos: todoListsList.value.find((list) => list.id == listId)?.todos,
+          })
+            .then(() => {
+              console.log('(Update)) Document has been updated successfully.');
+            })
+            .catch((error) => {
+              console.log('toggleCheckBox_error:', error);
+            });
+        }
+      });
+    }
   }
 
   return {
@@ -131,5 +275,6 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
     deleteTodoListsList,
     addTodoIntoTodoList,
     removeTodoFromTodoList,
+    toggleCheckBox,
   };
 });

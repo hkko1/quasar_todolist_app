@@ -1,6 +1,7 @@
 <!-- Lists of Todo list on leftside menu -->
 <template>
-  <q-list>
+  <div v-if="loading == true">loading</div>
+  <q-list v-else>
     <q-item
       clickable
       v-for="todoLists in todoListsList"
@@ -30,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 //import { ITodoLists } from './models';
 import { useTodoListsListStore } from 'src/stores/todolistslist-store';
 import { useRouter } from 'vue-router';
@@ -39,11 +40,26 @@ export default defineComponent({
   name: 'TodoListsList',
 
   setup() {
+    const loading = ref(false);
     const store = useTodoListsListStore();
     const todoListsList = store.todoListsList;
     //const route = useRoute();
     const router = useRouter();
     const selectedId = ref(-1);
+
+    // onMounted(() => {
+    //   initialize();
+    // });
+
+    // async function initialize() {
+    //   try {
+    //     await store.loadTodoListsFromDb();
+    //   } catch (error) {
+    //     alert(error);
+    //   } finally {
+    //     loading.value = false;
+    //   }
+    // }
 
     function deleteTitleTodoList(id: number) {
       console.log('removeTItleTodoList_____');
@@ -70,6 +86,7 @@ export default defineComponent({
     }
 
     return {
+      loading,
       store,
       todoListsList,
       selectedId,

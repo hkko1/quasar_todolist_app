@@ -1,12 +1,17 @@
 <!-- Detail todo lists on rightside page -->
 <template>
-  <div class="text-h6" v-if="!todosList">Make your Todo List</div>
+  <div style="padding: 30px" class="text-h6" v-if="!todosList">
+    Make your Todo List
+  </div>
   <q-list v-else>
-    <div class="text-h6">{{ todosList.title }}</div>
+    <div style="padding: 30px" class="text-h6">{{ todosList.title }}</div>
 
     <q-item v-for="todo in todosList.todos" :key="todo.id">
       <q-item-section side>
-        <q-checkbox v-model="todo.isFinished" />
+        <q-checkbox
+          v-model="todo.isFinished"
+          @click="toggleCheckBox(todo.id, todo.isFinished)"
+        />
       </q-item-section>
       <q-item-section> {{ todo.content }} </q-item-section>
       <q-item-section side>
@@ -54,12 +59,19 @@ export default defineComponent({
       store.todoListsList.find((list) => list.id === currentListId.value)
     );
 
+    function toggleCheckBox(todoId: number, isFinished: boolean) {
+      console.log(
+        `toggleCheckBox: currentListId= ${currentListId.value}, todoId= ${todoId}, isSelected= ${isFinished}`
+      );
+      store.toggleCheckBox(currentListId.value, todoId, isFinished);
+    }
+
     function removeTodoList(id: number) {
       console.log('remove id:', id);
       store.removeTodoFromTodoList(currentListId.value, id);
     }
     console.log('todos: ', todosList);
-    return { store, todosList, currentListId, removeTodoList };
+    return { store, todosList, currentListId, toggleCheckBox, removeTodoList };
   },
 });
 </script>
