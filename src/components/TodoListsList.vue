@@ -4,7 +4,7 @@
   <q-list v-else>
     <q-item
       clickable
-      v-for="todoLists in todoListsList"
+      v-for="todoLists in store.todoListsList"
       :key="todoLists.id"
       @click="selectTodoLists(todoLists.id)"
     >
@@ -61,6 +61,15 @@ export default defineComponent({
     //   }
     // }
 
+    testData();
+
+    function testData() {
+      console.log('[TodoListsList] todoListsListSize=', store.listCount);
+      todoListsList.forEach((list) => {
+        console.log(list);
+      });
+    }
+
     function deleteTitleTodoList(id: number) {
       console.log('removeTItleTodoList_____');
       store.deleteTodoListsList(id);
@@ -88,7 +97,6 @@ export default defineComponent({
     return {
       loading,
       store,
-      todoListsList,
       selectedId,
       deleteTitleTodoList,
       selectTodoLists,

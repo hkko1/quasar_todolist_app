@@ -14,6 +14,7 @@ import {
   where,
   arrayUnion,
   arrayRemove,
+  onSnapshot,
 } from 'firebase/firestore';
 
 //Data inside state() is reactive element.
@@ -46,52 +47,37 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
   // }
 
   async function loadTodoListsFromDb() {
+    // callback: (listData: ITodoLists[]) => void
     console.log('load data from db');
-    await new Promise((r) => setTimeout(r, 50));
+    // await new Promise((r) => setTimeout(r, 50));
 
-    const querySnapshot = await getDocs(collection(db, 'todoListsList'));
-    // querySnapshot.forEach((doc) => {
-    //   console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-
-    // });
-
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
-
-      //update the value of nextListid
-      if (nextListId.value <= doc.data().id) {
-        nextListId.value = doc.data().id + 1;
-      }
-
-      const todoLists: ITodoLists = {
-        id: doc.data().id,
-        title: doc.data().title,
-        todos: <ITodo[]>[],
-        nextTodoId: doc.data().nextTodoId,
-      };
-
-      doc
-        .data()
-        .todos.forEach(
-          (td: { id: number; content: string; isFinished: boolean }) => {
-            const todo: ITodo = {
-              id: td.id,
-              content: td.content,
-              isFinished: td.isFinished,
-            };
-            todoLists.todos.push(todo);
-          }
-        );
-      //debugger;
-      todoListsList.value.push(todoLists);
+    onSnapshot(collection(db, 'todoListsList'), (snapshot) => {
+      const lists = snapshot.docs.map((list) => {
+        //console.log('map:', list.data() as ITodoLists);
+        if (nextListId.value <= list.data().id) {
+          nextListId.value = list.data().id + 1;
+        }
+        return list.data() as ITodoLists;
+      });
+      // callback(lists);
+      console.log('onShapshot--inside');
+      todoListsList.value = lists;
     });
 
-    // todoListsList.value.forEach((list) => {
-    //   console.log('todoList:', list);
-    // });
+    console.log('---todoListsList: ', todoListsList.value);
+    todoListsList.value.forEach((list) => {
+      console.log('todoList:', list);
+    });
   }
 
   loadTodoListsFromDb();
+
+  // loadTodoListsFromDb((listData: ITodoLists[]) => {
+  //   todoListsList.value = listData;
+  //   // todoListsList.value.forEach((list) => {
+  //   //   console.log('callback_todoList:', list);
+  //   // });
+  // });
 
   async function createTodoListsList(todoLists: ITodoLists) {
     nextListId.value++;
@@ -246,7 +232,6 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
       console.log('id:', querySnapshot.docs[0].id);
       console.log('toggleCheckBox_docRef:', docRef);
 
-      //const todos = ref([]);
       await getDoc(docRef).then((doc) => {
         if (doc.exists()) {
           updateDoc(docRef, {
@@ -266,10 +251,7 @@ export const useTodoListsListStore = defineStore('todoListsList', () => {
   return {
     nextListId,
     todoListsList,
-    //currentListId,
     listCount,
-    //currentTodoLists,
-    // getTodoListsList,
     loadTodoListsFromDb,
     createTodoListsList,
     deleteTodoListsList,
